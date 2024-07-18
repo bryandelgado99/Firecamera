@@ -3,9 +3,33 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/app/views/informationPage.dart';
 import 'package:url_launcher/link.dart';
+// ignore: depend_on_referenced_packages
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
-class Homepage extends StatelessWidget {
+class Homepage extends StatefulWidget {
   const Homepage({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _HomeState createState() => _HomeState();
+}
+
+// Tomar fotos
+class _HomeState extends State<Homepage> {
+  File? _image;
+
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().pickImage(source: source);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('Imágen no seleccionada');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,19 +47,16 @@ class Homepage extends StatelessWidget {
                 image: DecorationImage(
                   image: NetworkImage(
                       "https://th.bing.com/th/id/R.a029bcc15d26dde4942b3a187412aa27?rik=VjbmPir%2bHOO2lA&pid=ImgRaw&r=0"),
-                  fit: BoxFit
-                      .cover, // Hace que la imagen cubra todo el contenedor
+                  fit: BoxFit.cover,
                 ),
               ),
               child: Stack(
                 children: const [
                   Positioned(
-                    bottom:
-                        16, // Puedes ajustar esto para cambiar la posición del texto
-                    left:
-                        16, // Puedes ajustar esto para cambiar la posición del texto
+                    bottom: 16,
+                    left: 16,
                     child: Text(
-                      "Bienvenido/a",
+                      "Bienvenidos",
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -64,15 +85,52 @@ class Homepage extends StatelessWidget {
           ],
         ),
       ),
-      body: const Center(child: Text("Firecamera")),
+      body: Center(
+        child: _image == null
+            ? const Text("Firecamera - Tú cámara ideal")
+            : Image.file(_image!),
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: _optionsDialogBox,
         child: Icon(Icons.camera_alt_rounded),
       ),
     );
   }
+
+// Pantalla de dialogo seleccionable
+  Future<void> _optionsDialogBox() {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _pickImage(ImageSource.camera);
+                  },
+                  child: Text("Tomar foto"),
+                ),
+                Padding(padding: EdgeInsets.all(8)),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _pickImage(ImageSource.gallery);
+                  },
+                  child: Text("Seleccionar galeria"),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
+// Lista hamburguesa
 Widget listItems(BuildContext context) {
   return Column(
     children: [
@@ -106,6 +164,7 @@ Widget listItems(BuildContext context) {
   );
 }
 
+// Enlace Github
 Widget githubLink() {
   const uri = "https://github.com/bryandelgado99/Firecamera";
 
