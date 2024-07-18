@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "656411162577",
+    "project_id": "firecamera-fa8e5",
+    "storage_bucket": "firecamera-fa8e5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:656411162577:android:d2d46b40df3aa80c1252f0",
+        "android_client_info": {
+          "package_name": "com.firecamera.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8eakSRXfQutDmLqwycFL4JXNScVJ11vA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
