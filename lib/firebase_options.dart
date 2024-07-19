@@ -38,20 +38,19 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static final FirebaseOptions web = FirebaseOptions(
-    apiKey: dotenv.env['API_KEY'] ?? '',
-    appId: dotenv.env['APP_ID'] ?? '',
-    messagingSenderId: dotenv.env['MESSAGING_SENDER_ID'] ?? '',
-    projectId: dotenv.env['PROJECT_ID'] ?? '',
-    authDomain: dotenv.env['AUTH_DOMAIN'] ?? '',
-    storageBucket: dotenv.env['STORAGE_BUCKET'] ?? '',
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyD8eakSRXfQutDmLqwycFL4JXNScVJ11vA',
+    appId: '1:656411162577:android:d2d46b40df3aa80c1252f0',
+    messagingSenderId: '656411162577',
+    projectId: 'firecamera-fa8e5',
+    storageBucket: 'firecamera-fa8e5.appspot.com',
   );
 
-  static final FirebaseOptions android = FirebaseOptions(
-    apiKey: dotenv.env['API_KEY'] ?? '',
-    appId: dotenv.env['APP_ID'] ?? '',
-    messagingSenderId: dotenv.env['MESSAGING_SENDER_ID'] ?? '',
-    projectId: dotenv.env['PROJECT_ID'] ?? '',
-    storageBucket: dotenv.env['STORAGE_BUCKET'] ?? '',
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyD8eakSRXfQutDmLqwycFL4JXNScVJ11vA',
+    appId: '1:656411162577:android:d2d46b40df3aa80c1252f0',
+    messagingSenderId: '656411162577',
+    projectId: 'firecamera-fa8e5',
+    storageBucket: 'firecamera-fa8e5.appspot.com',
   );
 }
