@@ -1,16 +1,18 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/app/views/informationPage.dart';
 import 'package:url_launcher/link.dart';
+// ignore: depend_on_referenced_packages
 import 'package:image_picker/image_picker.dart';
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
+import 'package:firebase_storage/firebase_storage.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomeState createState() => _HomeState();
 }
 
@@ -27,45 +29,70 @@ class _HomeState extends State<Homepage> {
     if (kIsWeb) {
       if (pickedFile != null) {
         final bytes = await pickedFile.readAsBytes();
+        await _uploadImageToFirebase(bytes);
         setState(() {
           _webImage = bytes;
           _webImages.add(_webImage!);
         });
       } else {
-        print('Imágen no seleccionada');
+        if (kDebugMode) {
+          print('Imagen no seleccionada');
+        }
       }
     }
   }
 
+  // Imagen seleccionada
   Future<void> _pickWebCameraImage() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
       final bytes = await pickedFile.readAsBytes();
+      await _uploadImageToFirebase(bytes);
       setState(() {
         _webImage = bytes;
         _webImages.add(_webImage!);
       });
     } else {
-      print('Imágen no seleccionada');
+      if (kDebugMode) {
+        print('Imagen no seleccionada');
+      }
     }
   }
 
-// Pantalla
+  // Carga a Firebase
+  Future<void> _uploadImageToFirebase(Uint8List imageBytes) async {
+    try {
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('images/${DateTime.now().millisecondsSinceEpoch}.png');
+      await storageRef.putData(imageBytes);
+      final downloadURL = await storageRef.getDownloadURL();
+      if (kDebugMode) {
+        print('Descargar URL: $downloadURL');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error al cargar la imagen: $e');
+      }
+    }
+  }
+
+  // Pantalla
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 205, 185, 238),
+        backgroundColor: const Color.fromARGB(255, 205, 185, 238),
         title: const Text("Galeria",
             style: TextStyle(fontWeight: FontWeight.bold)),
       ),
       drawer: Drawer(
         child: Column(
           children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(
+            const DrawerHeader(
+              decoration: BoxDecoration(
                 image: DecorationImage(
                   image: NetworkImage(
                       "https://th.bing.com/th/id/R.a029bcc15d26dde4942b3a187412aa27?rik=VjbmPir%2bHOO2lA&pid=ImgRaw&r=0"),
@@ -73,7 +100,7 @@ class _HomeState extends State<Homepage> {
                 ),
               ),
               child: Stack(
-                children: const [
+                children: [
                   Positioned(
                     bottom: 16,
                     left: 16,
@@ -111,19 +138,19 @@ class _HomeState extends State<Homepage> {
         child: _showGallery
             ? _buildGallery()
             : _webImage == null
-                ? const Text("Firecamera - Tú cámara ideal")
+                ? const Text("Firecamera - Tu cámara ideal")
                 : Image.memory(_webImage!),
       ),
       floatingActionButton: _showGallery
           ? null
           : FloatingActionButton(
               onPressed: _optionsDialogBox,
-              child: Icon(Icons.camera_alt_rounded),
+              child: const Icon(Icons.camera_alt_rounded),
             ),
     );
   }
 
-// Galeria
+  // Galeria
   Widget _buildGallery() {
     if (kIsWeb) {
       if (_webImages.isEmpty) {
@@ -131,7 +158,7 @@ class _HomeState extends State<Homepage> {
       } else {
         return GridView.builder(
           itemCount: _webImages.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
             crossAxisSpacing: 4.0,
             mainAxisSpacing: 4.0,
@@ -146,7 +173,7 @@ class _HomeState extends State<Homepage> {
     }
   }
 
-// Texto de seleccion
+  // Texto de seleccion
   Future<void> _optionsDialogBox() {
     return showDialog(
       context: context,
@@ -162,15 +189,15 @@ class _HomeState extends State<Homepage> {
                       _pickWebCameraImage();
                     }
                   },
-                  child: Text("Tomar foto"),
+                  child: const Text("Tomar foto"),
                 ),
-                Padding(padding: EdgeInsets.all(8)),
+                const Padding(padding: EdgeInsets.all(8)),
                 GestureDetector(
                   onTap: () {
                     Navigator.of(context).pop();
                     _pickImage(ImageSource.gallery);
                   },
-                  child: Text("Seleccionar galería"),
+                  child: const Text("Seleccionar galería"),
                 ),
               ],
             ),
@@ -180,7 +207,7 @@ class _HomeState extends State<Homepage> {
     );
   }
 
-// Mostrar galeriia
+  // Mostrar galería
   void _toggleGallery() {
     setState(() {
       _showGallery = !_showGallery;
@@ -193,8 +220,8 @@ Widget listItems(BuildContext context, VoidCallback toggleGallery) {
   return Column(
     children: [
       ListTile(
-        leading: Icon(Icons.photo_album_rounded),
-        title: Text("Galería"),
+        leading: const Icon(Icons.photo_album_rounded),
+        title: const Text("Galería"),
         iconColor: Colors.deepPurple,
         textColor: Colors.deepPurple,
         onTap: () {
@@ -206,10 +233,10 @@ Widget listItems(BuildContext context, VoidCallback toggleGallery) {
         height: 8,
       ),
       ListTile(
-        leading: Icon(Icons.info_outline_rounded),
+        leading: const Icon(Icons.info_outline_rounded),
         iconColor: Colors.deepPurple,
         textColor: Colors.deepPurple,
-        title: Text("Información de la aplicación"),
+        title: const Text("Información de la aplicación"),
         onTap: () {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const Informationpage()));
