@@ -1,130 +1,107 @@
-# 🖼️🔥 Galeria Flutter Firebase
+# 🖼️🔥 Firecamera
 
-Un Chat Global en tiempo real realizado en Ionic-Vue-Firebase, con un aplicativo móvil.
+Una aplicación de fotografía y previsualización de imágenes, desarrollada con Flutter y Firebase.
 
-![Logo](https://res.cloudinary.com/practicaldev/image/fetch/s---LBXaBPw--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/i/l6utl2wsk6fn1x3y5bf1.png)
+![Logo](https://th.bing.com/th/id/R.d4b76713e39bef3ff17cdce0a955b98d?rik=wtpMb6BzysL4jg&riu=http%3a%2f%2frumbum.co%2fwp-content%2fuploads%2f2020%2f11%2f3da097bfde49aef8e7b0aa00b7ac3ae1.png&ehk=ch65lIthB5z6uHK%2b%2fzw3Jed8qkH%2fOdI4%2bp0ocijCVrg%3d&risl=&pid=ImgRaw&r=0)
 
 ## 📒 Funciones
 
-- Iniciar con credenciales de correo y Google
-- Enviar fotos
-- Enviar PDF´s
-- Enviar Ubicación
-- Deploy en Android
-- Deploy en Web
-- El tamaño limite de los archivos es 5 MB y solo puden cargarse archivos de tipo pdf o jpeg
+- Envia fotos de manera local o tomadas con la cámara de tus dispositivo
+- Visualiza las fotografías que se hayan subido al Storage de Firebase.
 
 ## 💻 Tecnologías
 
 **😀 Cliente:**
-Ionic - Android - ReadME - Html - CSS - Javascript - Typescript
+Flutter - Android - Webkits - Firebase
 
-[![Tecnologías](https://simpleskill.icons.workers.dev/svg?i=ionic,android,readme,html5,CSS3,javascript,typescript)](https://skillicons.dev)
+[![Tecnologías](https://simpleskill.icons.workers.dev/svg?i=flutter,html5,android,firebase)](https://skillicons.dev)
 
 **🖥️ Servidor:**
-Vue - Firebase - NPM - Javascript - Typescript - Git - Capacitor
+Servicios de Firebase: Storage y Hosting
 
-[![Tecnologías](https://simpleskill.icons.workers.dev/svg?i=vuedotjs,firebase,npm,javascript,typescript,git,capacitor)](https://skillicons.dev)
+[![Tecnologías](https://simpleskill.icons.workers.dev/svg?i=firebase,google)](https://skillicons.dev)
 
 ## ⏬ Instalacion
 
 Clona el proyecto
 
 ```bash
-  git clone https://github.com/Mino-Mateo/Examen_Moviles_Chat.git
+  git clone https://github.com/bryandelgado99/Firecamera.git
+```
+o, si usas GitHub CLI:
+
+```bash
+  gh repo clone bryandelgado99/Firecamera
 ```
 
 Ve a la carpeta del proyecto
 
 ```bash
-  cd Chat_Examen
+  cd Firecamera
 ```
 
-Instala las dependencias
+Instala las dependencias necesarias para el proyecto de Flutter
 
 ```bash
-  npm install
+  flutter pub get
 ```
 
 ## 🛑 ADVERTENCIA
 
-Si no tienes ionic puedes instalarlo con el siguiente comando:
+Revisa que tengas instalado Firebase en tu equipos, sino, usa el comando:
 
 ```bash
-  npm install -g @ionic/cli
+  npm install -g firebase-tools
 ```
 
-Recuerda la aplicacion se despliega en con el comando
+Inicializa la aplicación con los siguientes comandos:
 
 ```bash
-  ionic serve
+  flutter run --web / flutter run
 ```
 
-Si quieres que se despliegue en tu servicio de Firebase recuerda crear en la carpeta del proyecto un archivo .env
-
-```bash
- New-Item .env
-```
-
-Todo esto es necesario para que pueda funcionar correctamente
+>[!IMPORTANT]
+>Recuerda que para probar la apliación en un dispositivo Android, debes conectar tu equipo en modo de *Depuración USB* o *Depuración Inalámbrica*.
+>También puedes crear un dispositivo virtual, en base los componentes y recursos de tu equipo.
 
 ## 🍃 Variables de Entorno
 
 Para ejecutar este proyecto necesitaras dirijirte a archivo .env y colocar tus variables de entorno de la siguiente manera:
 
-```js
-VITE_API_KEY: "API_KEY";
-VITE_AUTH_DOMAIN: "DOMINIO";
-VITE_PROJECT_ID: "ID";
-VITE_STORAGE_BUCKET: "Storage";
-VITE_MESSAGING_SENDER_ID: "ID_Mensaje";
-VITE_APP_ID: "APP_ID";
-VITE_MEASUREMENTID: "ID_Medida";
+```Firebase Options
+    apiKey: 'API_KEY',
+    appId: 'APP_ID',
+    messagingSenderId: 'MESSAGE_SENDER',
+    projectId: 'PROJECT_ID',
+    storageBucket: 'STORAGE_URL',
 ```
-
-Si no sabes donde se encuentran tus variables de entorno dirigete:
-
-```bash
-  https://firebase.google.com/?hl=es-419
-```
-
-Inicia sesion y selecciona tu proyecto
-
-```bash
- Descripción Genreal > Configuración del proyecto > [Selecciona tu proyecto web]
-```
-
-Y podras ver tus variables de entorno lista para usarse
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
-
 ## 🧩 Uso/Ejemplos
 
-### 😀 Login
+### 😀 inicio de la aplicación  
+![App Screenshot](https://github.com/bryandelgado99/Firecamera/blob/43d7d5d6b70d71b53b5cc4b16abb2be35be44160/resources/Imagen%20de%20WhatsApp%202024-07-19%20a%20las%2001.49.05_68fd1fb0.jpg)
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+### ✍️ Menú de navegación  
+![App Screenshot](https://github.com/bryandelgado99/Firecamera/blob/ea20945aa8977be2c33102e80386b95b394c73e1/resources/Imagen%20de%20WhatsApp%202024-07-19%20a%20las%2001.49.04_d75afb62.jpg)
 
-### ✍️ Registro
+### 📲 Subida de imágenes  
+![App Screenshot](https://github.com/bryandelgado99/Firecamera/blob/ea20945aa8977be2c33102e80386b95b394c73e1/resources/Imagen%20de%20WhatsApp%202024-07-19%20a%20las%2002.00.51_effc069e.jpg)
+![App Shot](https://github.com/bryandelgado99/Firecamera/blob/ea20945aa8977be2c33102e80386b95b394c73e1/resources/Imagen%20de%20WhatsApp%202024-07-19%20a%20las%2002.00.59_dd3963e3.jpg)
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+### 📲 Pasarela de imágenes  
+![App Screenshot](https://github.com/bryandelgado99/Firecamera/blob/ea20945aa8977be2c33102e80386b95b394c73e1/resources/Imagen%20de%20WhatsApp%202024-07-19%20a%20las%2001.49.04_af213871.jpg)
 
-### 📲 Chat
+### 📲 Demostración Web  
+![App Screenshot](resources/web_init.png)
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+### 📲 Información de la aplicación  
+![App Screenshot](resources/web_info.png)
 
 ## 🌎 Demo
 
 Si quieres probar la aplicación puedes hacerlo desde el siguiente enlace:
 
-```link
- https://epn-chat.web.app/
-```
+[Despliegue Web con Flutter](https://firecamera-fa8e5.web.app/)
 
 O si quieres probar el proyecto en Moviles puedes hacerlo desde aqui para descargar la APK
 
-```link
- https://epn-chat.web.app/
-```
-
-## 🎥 Video Demostrativo
-
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+[Descarga el APK](https://github.com/bryandelgado99/Firecamera/releases/tag/1.0.0)
