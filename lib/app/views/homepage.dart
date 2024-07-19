@@ -6,27 +6,24 @@ import 'package:url_launcher/link.dart';
 // ignore: depend_on_referenced_packages
 import 'package:image_picker/image_picker.dart';
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:firebase_storage/firebase_storage.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _HomeState createState() => _HomeState();
 }
 
-// Camara
+// Firebase
 class _HomeState extends State<Homepage> {
   Uint8List? _webImage;
-  final List<Uint8List> _webImages = [];
-  bool _showGallery = false;
   bool _isLoading = false;
 
   Future<void> _pickImage(ImageSource source) async {
     setState(() {
-      _isLoading = true; // Mostrar el ProgressIndicator
+      _isLoading = true;
     });
 
     try {
@@ -34,12 +31,10 @@ class _HomeState extends State<Homepage> {
       final pickedFile = await picker.pickImage(source: source);
 
       if (pickedFile != null) {
-          final bytes = await pickedFile.readAsBytes();
-          // Aquí podrías subir la imagen a Firebase o realizar otra acción
-          setState(() {
-            _webImage = bytes;
-            _webImages.add(_webImage!);
-          });
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _webImage = bytes;
+        });
       } else {
         if (kDebugMode) {
           print('Imagen no seleccionada');
@@ -51,7 +46,7 @@ class _HomeState extends State<Homepage> {
       }
     } finally {
       setState(() {
-        _isLoading = false; // Ocultar el ProgressIndicator
+        _isLoading = false;
       });
     }
   }
@@ -66,7 +61,6 @@ class _HomeState extends State<Homepage> {
         await _uploadImageToFirebase(bytes);
         setState(() {
           _webImage = bytes;
-          _webImages.add(_webImage!);
         });
       } else {
         if (kDebugMode) {
@@ -81,7 +75,6 @@ class _HomeState extends State<Homepage> {
   }
 
   Future<void> _uploadImageToFirebase(Uint8List imageData) async {
-    // Código para subir la imagen a Firebase Storage
     try {
       FirebaseStorage storage = FirebaseStorage.instance;
       Reference ref =
@@ -94,7 +87,6 @@ class _HomeState extends State<Homepage> {
     }
   }
 
-  // Pantalla
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -136,7 +128,7 @@ class _HomeState extends State<Homepage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    listItems(context, _toggleGallery),
+                    listItems(context),
                     githubLink(),
                     const Text(
                       "V 1.0.0",
@@ -151,40 +143,18 @@ class _HomeState extends State<Homepage> {
       ),
       body: Center(
         child: _isLoading
-            ? const CircularProgressIndicator() // Mostrar el ProgressIndicator mientras se carga
+            ? const CircularProgressIndicator()
             : _webImage == null
-                ? _buildGallery() // Mostrar la galería si no hay imagen cargada
+                ? const Text("Firecamera - Tu cámara ideal")
                 : Image.memory(_webImage!),
       ),
-      floatingActionButton: _showGallery
-          ? null
-          : FloatingActionButton(
-              onPressed: _optionsDialogBox,
-              child: const Icon(Icons.camera_alt_rounded),
-            ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _optionsDialogBox,
+        child: const Icon(Icons.camera_alt_rounded),
+      ),
     );
   }
 
-  // Galeria
-  Widget _buildGallery() {
-      if (_webImages.isEmpty) {
-        return const Text("No hay imágenes en la galería");
-      } else {
-        return GridView.builder(
-          itemCount: _webImages.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 4.0,
-            mainAxisSpacing: 4.0,
-          ),
-          itemBuilder: (BuildContext context, int index) {
-            return Image.memory(_webImages[index]);
-          },
-        );
-      }
-  }
-
-  // Texto de seleccion
   Future<void> _optionsDialogBox() {
     return showDialog(
       context: context,
@@ -194,38 +164,42 @@ class _HomeState extends State<Homepage> {
             child: ListBody(
               children: <Widget>[
                 GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _pickWebCameraImage();
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Icon(Icons.camera_alt_rounded),
-                        SizedBox(width: 8,),
-                        Text("Tomar foto"),
-                      ],
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      _pickWebCameraImage();
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.camera_alt_rounded),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Text("Tomar foto"),
+                        ],
                       ),
-                  )
+                    )),
+                const SizedBox(
+                  height: 12,
                 ),
-                const SizedBox(height: 12,),
                 GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _pickImage(ImageSource.gallery);
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Icon(Icons.photo_album_rounded),
-                        SizedBox(width: 8,),
-                        Text("Escoger desde galería"),
-                      ],
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      _pickImage(ImageSource.gallery);
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.photo_album_rounded),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Text("Escoger desde galería"),
+                        ],
                       ),
-                  )
-                ),
+                    )),
               ],
             ),
           ),
@@ -233,17 +207,9 @@ class _HomeState extends State<Homepage> {
       },
     );
   }
-
-  // Mostrar galería
-  void _toggleGallery() {
-    setState(() {
-      _showGallery = !_showGallery;
-    });
-  }
 }
 
-// Lista hamburguesa
-Widget listItems(BuildContext context, VoidCallback toggleGallery) {
+Widget listItems(BuildContext context) {
   return Column(
     children: [
       ListTile(
@@ -285,7 +251,6 @@ Widget listItems(BuildContext context, VoidCallback toggleGallery) {
   );
 }
 
-// Enlace Github
 Widget githubLink() {
   const uri = "https://github.com/bryandelgado99/Firecamera";
 
