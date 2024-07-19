@@ -2,6 +2,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/app/views/informationPage.dart';
 import 'package:flutter_application_1/app/views/showPasarela.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/link.dart';
 // ignore: depend_on_referenced_packages
 import 'package:image_picker/image_picker.dart';
@@ -16,63 +17,94 @@ class Homepage extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-// Firebase
 class _HomeState extends State<Homepage> {
   Uint8List? _webImage;
   bool _isLoading = false;
 
   Future<void> _pickImage(ImageSource source) async {
-    setState(() {
-      _isLoading = true;
-    });
+  setState(() {
+    _isLoading = true;
+  });
 
-    try {
-      final picker = ImagePicker();
-      final pickedFile = await picker.pickImage(source: source);
+  try {
+    Fluttertoast.showToast(
+      msg: "Subiendo foto a Firebase Storage",
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+    );
 
-      if (pickedFile != null) {
-        final bytes = await pickedFile.readAsBytes();
-        setState(() {
-          _webImage = bytes;
-        });
-      } else {
-        if (kDebugMode) {
-          print('Imagen no seleccionada');
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error al seleccionar la imagen: $e');
-      }
-    } finally {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
       setState(() {
-        _isLoading = false;
+        _webImage = bytes;
       });
-    }
-  }
+      await _uploadImageToFirebase(bytes);
 
-  Future<void> _pickWebCameraImage() async {
-    try {
-      final pickedFile =
-          await ImagePicker().pickImage(source: ImageSource.camera);
-
-      if (pickedFile != null) {
-        final bytes = await pickedFile.readAsBytes();
-        await _uploadImageToFirebase(bytes);
-        setState(() {
-          _webImage = bytes;
-        });
-      } else {
-        if (kDebugMode) {
-          print('Imagen no seleccionada');
-        }
-      }
-    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Carga exitosa",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+      );
+    } else {
       if (kDebugMode) {
-        print('Error al seleccionar la imagen: $e');
+        print('Imagen no seleccionada');
       }
     }
+  } catch (e) {
+    if (kDebugMode) {
+      print('Error al seleccionar la imagen: $e');
+    }
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
+
+Future<void> _pickWebCameraImage() async {
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    Fluttertoast.showToast(
+      msg: "Subiendo foto a Firebase Storage",
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+    );
+
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      await _uploadImageToFirebase(bytes);
+      setState(() {
+        _webImage = bytes;
+      });
+
+      Fluttertoast.showToast(
+        msg: "Carga exitosa",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+      );
+    } else {
+      if (kDebugMode) {
+        print('Imagen no seleccionada');
+      }
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print('Error al seleccionar la imagen: $e');
+    }
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
 
   Future<void> _uploadImageToFirebase(Uint8List imageData) async {
     try {
@@ -141,13 +173,14 @@ class _HomeState extends State<Homepage> {
           ],
         ),
       ),
-      body: Center(
-        child: _isLoading
-            ? const CircularProgressIndicator()
-            : _webImage == null
-                ? const Text("Firecamera - Tu cámara ideal")
-                : Image.memory(_webImage!),
-      ),
+      body: _isLoading
+          ? const LinearProgressIndicator()
+          : _webImage == null
+              ? const Center(child: Text("Sin previsualización"))
+              : Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Center(child: Image.memory(_webImage!)),
+              ),
       floatingActionButton: FloatingActionButton(
         onPressed: _optionsDialogBox,
         child: const Icon(Icons.camera_alt_rounded),

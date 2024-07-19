@@ -11,28 +11,56 @@ class Showpasarela extends StatefulWidget {
 }
 
 class _ShowpasarelaState extends State<Showpasarela> {
-  List<String> _imageUrls = [];
+  final List<String> _imageUrls = [];
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _loadImages();
+
   }
 
   Future<void> _loadImages() async {
+    if (_isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
-      final ListResult result =
-          await FirebaseStorage.instance.ref('images').listAll();
-      final List<String> urls =
-          await Future.wait(result.items.map((ref) => ref.getDownloadURL()));
+      final ListResult result = await FirebaseStorage.instance.ref('/images').listAll();
+      final List<String> urls = await Future.wait(result.items.map((ref) => ref.getDownloadURL()));
+
       setState(() {
-        _imageUrls = urls;
+        _imageUrls.addAll(urls);
       });
     } catch (e) {
       if (kDebugMode) {
-        print('Error cargando la imágen: $e');
+        print('Error cargando la imagen: $e');
       }
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
+  }
+
+  void _showImageDialog(String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.contain, // Ajusta la imagen dentro del diálogo
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -40,20 +68,34 @@ class _ShowpasarelaState extends State<Showpasarela> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 205, 185, 238),
-        title: const Text("Centro de previsualización",
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          "Pasarela de Visualización",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
-      body: _imageUrls.isEmpty
-          ? const Center(child: CircularProgressIndicator())
+      body: _imageUrls.isEmpty && !_isLoading
+          ? const Center(child: Text("No hay imágenes disponibles"))
           : GridView.builder(
-              itemCount: _imageUrls.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
+                crossAxisCount: 2,
                 crossAxisSpacing: 4.0,
                 mainAxisSpacing: 4.0,
               ),
+              itemCount: _imageUrls.length + (_isLoading ? 1 : 0),
               itemBuilder: (BuildContext context, int index) {
-                return Image.network(_imageUrls[index]);
+                if (index == _imageUrls.length) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return GestureDetector(
+                  onTap: () => _showImageDialog(_imageUrls[index]),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Image.network(
+                      _imageUrls[index],
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                );
               },
             ),
     );

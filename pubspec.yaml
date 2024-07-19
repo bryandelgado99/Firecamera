@@ -43,6 +43,7 @@ dependencies:
   firebase_storage: ^12.1.1
   flutter_dotenv: ^5.1.0
   firebase_core: ^3.2.0
+  fluttertoast: ^8.2.6
 
   image_picker: any
 dev_dependencies:
